@@ -4,10 +4,15 @@ const Product = require("./models/product.model");
 const app = express();
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 
 app.get("/", (req, res) => {
   res.send("hello testing");
 });
+
+//routes
+
+// app.get("/api/products", productRoute);
 
 app.get("/api/products", async (req, res) => {
   try {
@@ -48,6 +53,21 @@ app.put("/api/product/:id", async (req, res) => {
     const newProduct = await Product.findById(id);
 
     res.status(200).json(newProduct);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+//Delete
+app.delete("/api/product/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const product = await Product.findByIdAndDelete(id);
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    res.status(200).json({ message: "Product Deleted" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
